@@ -10,7 +10,7 @@ Dependancies: This project currently requires Esprima.
 ###
 
 # Test expression for Lua
-currentMoon = 'function () function () function add() return num1+num2 end end end print(add(2,2))'
+currentMoon = 'function () function () function add() return num1+num2 end end end'
 # Chew up the input to be iterated over
 moonRocks = currentMoon.split ' '
 
@@ -24,20 +24,23 @@ moonRocks = currentMoon.split ' '
 esprima = require 'esprima'
 
 stills =
-	anonymousFunction = new RegExp "^\("
-	namesAndParams = new RegExp "[a-z]*\((.*)\)"
+	isAnonymous: "/^\(/",	# I don't think that is necessary in this implementation.
+	namesAndParams: "/[a-z]*\((.*)\)/"
 
 moonShine = ''
 
 for clause in moonRocks
-	if clause.match(stills.namesAndParams)
-		res = clause.match(stills.namesAndParams)
-		moonShine += 
+	# replace and append the exceptions
+	switch clause
+		when clause == 'end' then
+			moonShine += '} '
+		when clause.match(stills.namesAndParams) then
+			moonShine += clause.match(stills.namesAndParams)
+			moonShine += '{ '
+	moonShine += clause + ' '
 
-	if clause == 'end'
-		moonShine += '}'	
-
-return
+console.log moonShine
+console.log esprima.parse(moonShine)
 
 
 
